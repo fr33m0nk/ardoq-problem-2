@@ -19,6 +19,6 @@
   :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.216"}}
             :exec-fn hf.depstar/uberjar
             :exec-args {:aot true
-                        :jar "target/problem-2.jar"
+                        :jar "problem-2.jar"
                         :main-class "fr33m0nk.ardoq.core"
                         :sync-pom true}}}}
