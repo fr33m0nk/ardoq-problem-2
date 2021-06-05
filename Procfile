@@ -1,1 +1,1 @@
-web: java $JVM_OPTS -cp target/problem-2.jar clojure.main -M -m fr33m0nk.ardoq.core
+web: java -jar problem-2.jar $PORT
