@@ -32,7 +32,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: lein test
+      - run: clojure -M:test/runner
 
       - save_cache:
           paths:
