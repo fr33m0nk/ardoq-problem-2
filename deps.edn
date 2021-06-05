@@ -1,0 +1,24 @@
+{:paths ["src" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.10.3"}
+        com.appsflyer/donkey {:mvn/version "0.5.1"}
+        functionalbytes/mount-lite {:mvn/version "2.2.1"}
+        clojure.java-time/clojure.java-time {:mvn/version "0.3.2"}
+        hato/hato {:mvn/version "0.8.1"}}
+ :aliases
+ {:run-m {:main-opts ["-m" "fr33m0nk.ardoq.core"]}
+  :run-x {:ns-default fr33m0nk.ardoq.core
+          :exec-fn -main
+          :exec-args {:name "Clojure"}}
+  :test {:extra-paths ["test"]
+         :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}}
+  :runner
+  {:extra-deps {io.github.cognitect-labs/test-runner
+                {:git/url "https://github.com/cognitect-labs/test-runner"
+                 :sha "2d69f33d7980c3353b246c28f72ffeafbd9f2fab"}}
+   :exec-fn cognitect.test-runner.api/test}
+  :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.216"}}
+            :exec-fn hf.depstar/uberjar
+            :exec-args {:aot true
+                        :jar "target/problem-2.jar"
+                        :main-class "fr33m0nk.ardoq.core"
+                        :sync-pom true}}}}
