@@ -16,7 +16,7 @@ It allows the usage of parens and understand operator precedence.
 curl --location --request POST 'http://<host:port>/api/v1/calc' \
 --header 'Accept: application/json' \
 --header 'Content-Type: application/json' \
---data-raw '{"expression": "-1 * (2 * 6 / 3) + 100.10"}'
+--data-raw '{"expression": "-1 * (2 * 6 / 3) + 100"}'
 ```  
 * `GET:/api/v1/history`
 ```shell
