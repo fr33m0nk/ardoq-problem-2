@@ -14,7 +14,9 @@
           :stop (dc/destroy @verticle))
 
 (defstate webserver
-          :start (let [server (dc/create-server @verticle {:port                (:port @config/config)
+          :start (let [server (dc/create-server @verticle {:port                (-> (or (System/getenv "PORT")
+                                                                                        (:port @config/config))
+                                                                                    (Integer.))
                                                            :middleware          [(mw/make-deserialize-middleware)]
                                                            :routes              (routes/routes @imdb/database)
                                                            :content-type-header true})]
