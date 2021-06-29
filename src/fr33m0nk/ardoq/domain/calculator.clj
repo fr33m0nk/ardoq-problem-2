@@ -43,13 +43,13 @@
 
 (defn curate-expression
   [expression session-vars user-id]
-  (let [user-space (user-id @session-vars)
-        [expression var] (clojure.string/split expression #" -> ")
-        expression (replace-vars-with-vals user-space expression)]
+  (let [user-space (get @session-vars user-id {})
+        [expression var] (clojure.string/split expression #" -> ")]
     (if-let [key-var (keyword var)]
       (-> (store-in-user-space user-id session-vars key-var (calculate expression))
-          :user-id key-var)
-      (calculate expression))))
+          (get-in [user-id key-var]))
+      (-> (replace-vars-with-vals user-space expression)
+           calculate))))
 
 
 

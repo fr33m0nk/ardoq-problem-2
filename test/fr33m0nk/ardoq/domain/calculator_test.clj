@@ -21,19 +21,19 @@
 
 (deftest curate-expression-test
   (testing "Should calculate and return the result in case of no assignment"
-    (let [result (calc/curate-expression "3 + 1" (atom {:user-id {}}) :user-id)]
+    (let [result (calc/curate-expression "3 + 1" (atom {}) :user-id)]
       (is (= 4 result))))
 
   (testing "Should store variable in atom if assignment is received"
-    (let [result (calc/curate-expression "3 -> a" (atom {:user-id {}}) :user-id)]
+    (let [result (calc/curate-expression "3 -> a" (atom {}) :user-id)]
       (is (= 3 result))))
 
   (testing "Should store the output of an expression assigned to a var in atom if assignment is received"
-    (let [result (calc/curate-expression "3 + 1 -> a" (atom {:user-id {}}) :user-id)]
+    (let [result (calc/curate-expression "3 + 1 -> a" (atom {}) :user-id)]
       (is (= 4 result))))
 
   (testing "Should use the value of a var stored in atom if expression uses the var"
-    (let [session-storage (atom {:user-id {}})]
+    (let [session-storage (atom {})]
       (calc/curate-expression "3 + 1 -> a" session-storage :user-id)
       (is (= 7 (calc/curate-expression "3 + a" session-storage :user-id))))))
 

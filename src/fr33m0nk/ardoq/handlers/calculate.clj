@@ -2,7 +2,8 @@
   (:require
     [fr33m0nk.ardoq.domain.calculator :as calc]
     [fr33m0nk.ardoq.configuration :as config]
-    [fr33m0nk.ardoq.validation.validator :as v]))
+    [fr33m0nk.ardoq.validation.validator :as v])
+  (:import (java.util UUID)))
 
 (defn calculate
   [database _req respond _raise]
@@ -17,10 +18,11 @@
 
 (defn turing
   [session-storage _req respond _raise]
-  (let [session-id (-> _req :headers :session-id)
+  (let [session-id (get (-> _req :headers) "session-id" (.toString (UUID/randomUUID)))
         expression (-> _req :body :expression)]
     (if (v/balanced-parentheses? expression)
       (respond {:status 201
-                :body   {:result (calc/curate-expression session-storage expression session-id)}})
+                :body   {:session-id session-id
+                         :result (calc/curate-expression expression session-storage session-id)}})
       (respond {:status 400
                 :body   {:error (-> @config/config :message :validation-error)}}))))

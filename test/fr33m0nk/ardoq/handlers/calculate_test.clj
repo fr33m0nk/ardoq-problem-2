@@ -31,3 +31,21 @@
       (is (= {:body   {:error "Provided expression is not supported"}
               :status 400} (handler/calculate db req identity identity))))))
 
+
+(deftest turing-test
+  (testing "should calculate and allocate for turing calculator for a session"
+    (let [session (atom {})
+          req {:headers {"session-id" "test-session"}
+               :body {:expression "-1 -> a"}}]
+      (is (= {:body {:session-id "test-session", :result -1}
+              :status 201}
+             (handler/turing session req identity identity)))))
+
+  (testing "should reused allocated var for turing calculator for a session"
+    (let [session (atom {"test-session" {:a -1}})
+          req {:headers {"session-id" "test-session"}
+               :body {:expression "-4 + a"}}]
+      (is (= {:body {:session-id "test-session", :result -5}
+              :status 201}
+             (handler/turing session req identity identity))))))
+
