@@ -5,7 +5,7 @@
     [com.appsflyer.donkey.middleware.json :as mw]))
 
 (defn routes
-  [database]
+  [session-storage database]
   [{:path         "/api/v1/calc"
     :methods      [:post]
     :consumes     ["application/json"]
@@ -18,4 +18,10 @@
     :produces     ["application/json"]
     :handler-mode :non-blocking
     :handler      (-> (partial history/get-history database)
+                      ((mw/make-serialize-middleware)))}
+   {:path         "/api/v1/turing"
+    :methods      [:post]
+    :produces     ["application/json"]
+    :handler-mode :non-blocking
+    :handler      (-> (partial calc/turing session-storage)
                       ((mw/make-serialize-middleware)))}])

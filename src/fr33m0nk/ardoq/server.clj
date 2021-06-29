@@ -13,12 +13,16 @@
           :start (dc/create-donkey)
           :stop (dc/destroy @verticle))
 
+(defstate session-storage
+          :start (atom {})
+          :stop (reset! @session-storage {}))
+
 (defstate webserver
           :start (let [server (dc/create-server @verticle {:port                (-> (or (System/getenv "PORT")
                                                                                         (:port @config/config))
                                                                                     (Integer.))
                                                            :middleware          [(mw/make-deserialize-middleware)]
-                                                           :routes              (routes/routes @imdb/database)
+                                                           :routes              (routes/routes @session-storage @imdb/database)
                                                            :content-type-header true})]
                    (-> server
                        ds/start

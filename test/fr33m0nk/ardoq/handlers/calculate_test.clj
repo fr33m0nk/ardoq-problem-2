@@ -30,3 +30,4 @@
           req {:body {:expression "-1 * 2 * 6 and / 3 + 100"}}]
       (is (= {:body   {:error "Provided expression is not supported"}
               :status 400} (handler/calculate db req identity identity))))))
+
