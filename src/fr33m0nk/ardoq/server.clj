@@ -18,15 +18,15 @@
           :stop (reset! @session-storage {}))
 
 (defstate webserver
-          :start (let [server (dc/create-server @verticle {:port                (-> (or (System/getenv "PORT")
-                                                                                        (:port @config/config))
-                                                                                    (Integer.))
+          :start (let [port (or (System/getenv "PORT")
+                                (:port @config/config))
+                       server (dc/create-server @verticle {:port                (-> port (Integer.))
                                                            :middleware          [(mw/make-deserialize-middleware)]
                                                            :routes              (routes/routes @session-storage @imdb/database)
                                                            :content-type-header true})]
                    (-> server
                        ds/start
-                       (dr/on-success (fn [_] (println "Server started listening on port 8080")))
+                       (dr/on-success (fn [_] (println "Server started listening on port " port)))
                        (dr/on-fail (fn [_] (println "Failed to start server"))))
                    server)
           :stop (ds/stop @webserver))

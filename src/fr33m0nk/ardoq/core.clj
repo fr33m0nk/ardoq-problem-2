@@ -1,6 +1,7 @@
 (ns fr33m0nk.ardoq.core
   (:require
-    [mount.lite :as mount])
+    [mount.lite :as mount]
+    [fr33m0nk.ardoq.server])
   (:gen-class))
 
 (defn -main
