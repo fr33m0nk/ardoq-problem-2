@@ -2,7 +2,8 @@
   (:require
     [fr33m0nk.ardoq.handlers.calculate :as calc]
     [fr33m0nk.ardoq.handlers.history :as history]
-    [com.appsflyer.donkey.middleware.json :as mw]))
+    [fr33m0nk.ardoq.middleware :as mw]
+    [com.appsflyer.donkey.middleware.json :as json]))
 
 (defn routes
   [session-storage database]
@@ -11,17 +12,20 @@
     :consumes     ["application/json"]
     :produces     ["application/json"]
     :handler-mode :non-blocking
-    :handler      (-> (partial calc/calculate database)
-                      ((mw/make-serialize-middleware)))}
+    :handler      (->> calc/calculate
+                      (mw/wrap-storage database)
+                      ((json/make-serialize-middleware)))}
    {:path         "/api/v1/history"
     :methods      [:get]
     :produces     ["application/json"]
     :handler-mode :non-blocking
-    :handler      (-> (partial history/get-history database)
-                      ((mw/make-serialize-middleware)))}
+    :handler      (->> history/get-history
+                       (mw/wrap-storage database)
+                      ((json/make-serialize-middleware)))}
    {:path         "/api/v1/turing"
     :methods      [:post]
     :produces     ["application/json"]
     :handler-mode :non-blocking
-    :handler      (-> (partial calc/turing session-storage)
-                      ((mw/make-serialize-middleware)))}])
+    :handler      (->> calc/turing
+                       (mw/wrap-storage session-storage)
+                       ((json/make-serialize-middleware)))}])

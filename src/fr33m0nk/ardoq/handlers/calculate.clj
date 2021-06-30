@@ -6,8 +6,9 @@
   (:import (java.util UUID)))
 
 (defn calculate
-  [database _req respond _raise]
+  [_req respond _raise]
   (let [expression (-> _req :body :expression)
+        database (:storage _req)
         validator (juxt v/balanced-parentheses? v/valid-items-in-expression?)]
     (if (every? true? (validator expression))
       (respond {:status 201
@@ -17,12 +18,13 @@
 
 
 (defn turing
-  [session-storage _req respond _raise]
+  [_req respond _raise]
   (let [session-id (get (-> _req :headers) "session-id" (.toString (UUID/randomUUID)))
+        session-store (:storage _req)
         expression (-> _req :body :expression)]
     (if (v/balanced-parentheses? expression)
       (respond {:status 201
                 :body   {:session-id session-id
-                         :result (calc/curate-expression expression session-storage session-id)}})
+                         :result (calc/curate-expression expression session-store session-id)}})
       (respond {:status 400
                 :body   {:error (-> @config/config :message :validation-error)}}))))

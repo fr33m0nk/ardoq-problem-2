@@ -18,10 +18,6 @@
         :else (list second f (convert-to-infix tail))))
     expression))
 
-;; 2 -> a; a + b
-;; atom {:user-id {}}
-
-
 (defn store-in-user-space
   [user-id user-space var value]
   (swap! user-space assoc-in [user-id var] value))
@@ -44,7 +40,8 @@
 (defn curate-expression
   [expression session-vars user-id]
   (let [user-space (get @session-vars user-id {})
-        [expression var] (clojure.string/split expression #" -> ")]
+        [expression var] (->> (clojure.string/split expression #"->")
+                              (map clojure.string/trim))]
     (if-let [key-var (keyword var)]
       (-> (store-in-user-space user-id session-vars key-var (calculate expression))
           (get-in [user-id key-var]))

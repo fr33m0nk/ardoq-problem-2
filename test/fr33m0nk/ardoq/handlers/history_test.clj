@@ -14,11 +14,11 @@
                                           :result     -4
                                           :timestamp  "2021-06-05T06:09:34.692270Z"}])]
       (let [db (imdb/init-database)
-            req {}]
+            req {:storage db}]
         (is (= {:body   [{:expression "2 * (2 * 6 / 3)"
                           :result     8
                           :timestamp  "2021-06-05T06:09:34.692270Z"}
                          {:expression "-1 * (2 * 6 / 3)"
                           :result     -4
                           :timestamp  "2021-06-05T06:09:34.692270Z"}]
-                :status 200} (handler/get-history db req identity identity)))))))
+                :status 200} (handler/get-history req identity identity)))))))
