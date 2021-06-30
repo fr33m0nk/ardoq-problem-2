@@ -4,6 +4,6 @@
 
 (defn get-history
   [_req respond _raise]
-  (let [database (:storage _req)]
+  (let [database (:db _req)]
     (respond {:status 200
               :body   (h/get-history database)})))

@@ -10,28 +10,28 @@
 
 (deftest calculate-test
   (testing "should process the expression and return the clojure map for response"
-    (with-redefs [calc/calculate-and-save (fn [_ _] -4)]
+    (with-redefs [calc/calculate-and-save (fn [_ _ _ _] -4)]
       (let [db (imdb/init-database)
             req {:body    {:expression "-1 * (2 * 6 / 3) + 100"}
-                 :storage db}]
+                 :db db}]
         (is (= {:body   {:result -4}
                 :status 201} (handler/calculate req identity identity))))))
   (testing "should validate and return error if expression not present in request"
     (let [db (imdb/init-database)
           req {:body    {}
-               :storage db}]
+               :db db}]
       (is (= {:body   {:error "Provided expression is not supported"}
               :status 400} (handler/calculate req identity identity)))))
   (testing "should validate and return error if expression contains unbalanced parentheses"
     (let [db (imdb/init-database)
           req {:body    {:expression "-1 * 2 * 6) / 3 + 100"}
-               :storage db}]
+               :db db}]
       (is (= {:body   {:error "Provided expression is not supported"}
               :status 400} (handler/calculate req identity identity)))))
   (testing "should validate and return error if expression contains unsupported characters"
     (let [db (imdb/init-database)
           req {:body    {:expression "-1 * 2 * 6 and / 3 + 100"}
-               :storage db}]
+               :db db}]
       (is (= {:body   {:error "Provided expression is not supported"}
               :status 400} (handler/calculate req identity identity))))))
 
@@ -41,7 +41,7 @@
     (let [session (atom {})
           req {:headers {"session-id" "test-session"}
                :body    {:expression "-1 -> a"}
-               :storage session}]
+               :session session}]
       (is (= {:body   {:session-id "test-session", :result -1}
               :status 201}
              (handler/turing req identity identity)))))
@@ -50,7 +50,7 @@
     (let [session (atom {"test-session" {:a -1}})
           req {:headers {"session-id" "test-session"}
                :body    {:expression "-4 + a"}
-               :storage session}]
+               :session session}]
       (is (= {:body   {:session-id "test-session", :result -5}
               :status 201}
              (handler/turing req identity identity))))))

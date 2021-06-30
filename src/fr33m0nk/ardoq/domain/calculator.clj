@@ -26,27 +26,27 @@
   (let [expression (edn/read-string (str "(" input-expression ")"))]
     (eval (convert-to-infix expression))))
 
-(defn calculate-and-save
-  [database input-expression]
-  (let [result (calculate input-expression)]
-    (future (db/save-expression database input-expression result))
-    result))
-
 (defn replace-vars-with-vals
   [user-space expression]
   (reduce (fn [acc [k v]]
             (clojure.string/replace acc (name k) (str v))) expression user-space))
 
-(defn curate-expression
-  [expression session-vars user-id]
-  (let [user-space (get @session-vars user-id {})
+(defn turing-exp-calculate
+  [expression session session-id]
+  (let [user-space (get @session session-id {})
         [expression var] (->> (clojure.string/split expression #"->")
                               (map clojure.string/trim))]
     (if-let [key-var (keyword var)]
-      (-> (store-in-user-space user-id session-vars key-var (calculate expression))
-          (get-in [user-id key-var]))
+      (-> (store-in-user-space session-id session key-var (calculate expression))
+          (get-in [session-id key-var]))
       (-> (replace-vars-with-vals user-space expression)
            calculate))))
+
+(defn calculate-and-save
+  [database session session-id input-expression]
+  (let [result (turing-exp-calculate input-expression session session-id)]
+    (future (db/save-expression database input-expression result))
+    result))
 
 
 

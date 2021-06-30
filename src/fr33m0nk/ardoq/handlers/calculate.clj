@@ -6,25 +6,24 @@
   (:import (java.util UUID)))
 
 (defn calculate
-  [_req respond _raise]
-  (let [expression (-> _req :body :expression)
-        database (:storage _req)
+  [{:keys [db session headers] :as _req} respond _raise]
+  (let [session-id (get headers "session-id" (.toString (UUID/randomUUID)))
+        expression (-> _req :body :expression)
         validator (juxt v/balanced-parentheses? v/valid-items-in-expression?)]
     (if (every? true? (validator expression))
       (respond {:status 201
-                :body   {:result (calc/calculate-and-save database expression)}})
+                :body   {:result (calc/calculate-and-save db session session-id expression)}})
       (respond {:status 400
                 :body   {:error (-> @config/config :message :validation-error)}}))))
 
 
 (defn turing
-  [_req respond _raise]
-  (let [session-id (get (-> _req :headers) "session-id" (.toString (UUID/randomUUID)))
-        session-store (:storage _req)
+  [{:keys [db session headers] :as _req} respond _raise]
+  (let [session-id (get headers "session-id" (.toString (UUID/randomUUID)))
         expression (-> _req :body :expression)]
     (if (v/balanced-parentheses? expression)
       (respond {:status 201
                 :body   {:session-id session-id
-                         :result (calc/curate-expression expression session-store session-id)}})
+                         :result     (calc/calculate-and-save db session session-id expression)}})
       (respond {:status 400
                 :body   {:error (-> @config/config :message :validation-error)}}))))

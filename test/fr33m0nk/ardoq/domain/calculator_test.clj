@@ -17,30 +17,30 @@
 (deftest calculate-and-save-test
   (testing "should parse and calculate the result of provided expression along with storing it in database"
     (let [db (imdb/init-database)]
-      (is (= -4 (calc/calculate-and-save db "-1 * (2 * 6 / 3)"))))))
+      (is (= -4 (calc/calculate-and-save db (atom {}) :session-id "-1 * (2 * 6 / 3)"))))))
 
-(deftest curate-expression-test
+(deftest turing-exp-calculate-test
   (testing "Should calculate and return the result in case of no assignment"
-    (let [result (calc/curate-expression "3 + 1" (atom {}) :user-id)]
+    (let [result (calc/turing-exp-calculate "3 + 1" (atom {}) :session-id)]
       (is (= 4 result))))
 
   (testing "Should store variable in atom if assignment is received"
-    (let [result (calc/curate-expression "3 -> a" (atom {}) :user-id)]
+    (let [result (calc/turing-exp-calculate "3 -> a" (atom {}) :session-id)]
       (is (= 3 result))))
 
   (testing "Should store the output of an expression assigned to a var in atom if assignment is received"
-    (let [result (calc/curate-expression "3 + 1 -> a" (atom {}) :user-id)]
+    (let [result (calc/turing-exp-calculate "3 + 1 -> a" (atom {}) :session-id)]
       (is (= 4 result))))
 
   (testing "Should use the value of a var stored in atom if expression uses the var"
-    (let [session-storage (atom {})]
-      (calc/curate-expression "3 + 1 -> a" session-storage :user-id)
-      (is (= 7 (calc/curate-expression "3 + a" session-storage :user-id))))))
+    (let [session (atom {})]
+      (calc/turing-exp-calculate "3 + 1 -> a" session :session-id)
+      (is (= 7 (calc/turing-exp-calculate "3 + a" session :session-id))))))
 
 (deftest store-in-user-space-test
   (testing "Should store variable in atom in user space"
-    (let [result (calc/store-in-user-space :user-id (atom {}) :a 3)]
-      (is (= 3 (-> result :user-id :a))))))
+    (let [result (calc/store-in-user-space :session-id (atom {}) :a 3)]
+      (is (= 3 (-> result :session-id :a))))))
 
 (deftest replace-vars-with-vals-test
   (testing "should replace the variables in the expression with their values from userspace"

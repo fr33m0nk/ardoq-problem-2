@@ -1,7 +1,7 @@
 (ns fr33m0nk.ardoq.middleware)
 
 (defn wrap-storage
-  [storage handler]
+  [session db handler]
   (fn [request respond raise]
-    (-> (assoc request :storage storage)
+    (-> (assoc request :db db :session session)
         (handler respond raise))))
